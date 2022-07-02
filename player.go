@@ -2,8 +2,6 @@ package main
 
 import rl "github.com/gen2brain/raylib-go/raylib"
 
-const startSpeed float32 = 3.0
-
 type Player struct {
 	sprite                rl.Texture2D
 	src                   rl.Rectangle
@@ -15,12 +13,12 @@ type Player struct {
 	speed                 float32
 }
 
-func newPlayer() *Player {
+func NewPlayer() *Player {
 	return &Player{
 		sprite:   rl.LoadTexture("res/Characters/BasicCharakterSpritesheet.png"),
-		speed:    startSpeed,
+		speed:    1.5,
 		src:      rl.NewRectangle(0, 0, 48, 48),
-		dest:     rl.NewRectangle(200, 200, 100, 100),
+		dest:     rl.NewRectangle(200, 200, 60, 60),
 		isMoving: false,
 		dir:      0,
 		up:       false,
@@ -47,7 +45,7 @@ func (p *Player) Input() {
 }
 
 func (p *Player) Update() {
-	p.src.X = 0
+	p.src.X = p.src.Width * float32(p.frame)
 
 	if p.isMoving {
 		if p.up {
@@ -62,14 +60,16 @@ func (p *Player) Update() {
 		if p.left {
 			p.dest.X -= p.speed
 		}
-		if frameCount%8 == 1 {
-			p.frame++
-		}
-		p.src.X = p.src.Width * float32(p.frame)
 	}
-	if p.frame > 3 {
+	// change player frame if moving or idle in 1/2 seconds
+	if (p.isMoving && frameCount%8 == 1) || (!p.isMoving && frameCount%30 == 1) {
+		p.frame++
+	}
+
+	if p.frame > 3 || (!p.isMoving && p.frame > 1) {
 		p.frame = 0
 	}
+	p.src.X = p.src.Width * float32(p.frame)
 	p.src.Y = p.src.Height * float32(p.dir)
 	p.isMoving, p.up, p.down, p.right, p.left = false, false, false, false, false
 }
