@@ -16,9 +16,9 @@ type Player struct {
 func NewPlayer() *Player {
 	return &Player{
 		sprite:   rl.LoadTexture("res/Characters/BasicCharakterSpritesheet.png"),
-		speed:    1.5,
+		speed:    1.0,
 		src:      rl.NewRectangle(0, 0, 48, 48),
-		dest:     rl.NewRectangle(200, 200, 60, 60),
+		dest:     rl.NewRectangle(200, 200, 100, 100),
 		isMoving: false,
 		dir:      0,
 		up:       false,
@@ -30,6 +30,11 @@ func NewPlayer() *Player {
 }
 
 func (p *Player) Input() {
+	if (rl.IsKeyDown(rl.KeyLeftShift) || rl.IsKeyDown(rl.KeyRightShift)) && p.speed < 5.5 {
+		p.speed += 0.25
+	} else if p.speed > 1.0 {
+		p.speed -= 0.125
+	}
 	if rl.IsKeyDown(rl.KeyW) || rl.IsKeyDown(rl.KeyUp) {
 		p.isMoving, p.up, p.dir = true, true, 1
 	}

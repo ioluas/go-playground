@@ -28,13 +28,20 @@ func input() {
 	if rl.IsKeyPressed(rl.KeyO) {
 		rl.TakeScreenshot("screenshot.png")
 	}
-	if rl.IsKeyPressed(rl.KeyQ) {
-		running = false
+
+	if rl.IsKeyPressed(rl.KeyF) {
+		if rl.IsWindowFullscreen() {
+			rl.SetWindowSize(screenWidth, screenHeight)
+		} else {
+			display := rl.GetCurrentMonitor()
+			rl.SetWindowSize(rl.GetMonitorWidth(display), rl.GetMonitorHeight(display))
+		}
+		rl.ToggleFullscreen()
 	}
 }
 
 func update() {
-	running = running && !rl.WindowShouldClose()
+	running = !rl.WindowShouldClose()
 	frameCount++
 
 	player.Update()
@@ -50,19 +57,21 @@ func render() {
 	gameMap.Draw()
 	player.Draw()
 
+	rl.DrawFPS(int32(screenWidth/2), int32(screenHeight/2))
+
 	rl.EndMode2D()
 	rl.EndDrawing()
 }
 
 func init() {
-	rl.InitWindow(screenWidth, screenHeight, "Jad's super awesome game")
-	rl.SetExitKey(0)
+	rl.InitWindow(screenWidth, screenHeight, "Playground")
+	rl.SetExitKey(rl.KeyQ)
 	rl.SetTargetFPS(60)
 	rl.InitAudioDevice()
 
 	audio = NewAudio()
 	player = NewPlayer()
-	camera = NewCamera(*player)
+	camera = NewCamera(player)
 	gameMap = NewGameMap()
 }
 
